@@ -1,0 +1,26 @@
+<body>
+    <h1>실시간 상담</h1>
+    <textarea id="chatLog" readonly rows="10" cols="50"></textarea>
+    <br><br/>
+    <input type="text" id="username" placeholder="닉네임">
+    <input type="text" id="message" placeholder="메시지를 입력하세요" onkeydown="if(event.keyCode === 13) sendMessage();">
+    <button onclick="sendMessage()">발송</button>
+    <script>
+    var socket = new WebSocket("ws://localhost:8000/ws");
+
+    socket.onmessage = function(event) {
+        var chatLog = document.getElementById("chatLog");
+        chatLog.value += event.data + '\n';
+        chatLog.scrollTop = chatLog.scrollHeight; // 스크롤을 가장 아래로 이동
+    };
+
+    function sendMessage() {
+        var username = document.getElementById("username").value;
+        var message = document.getElementById("message").value;
+        var date = new Date().toLocaleTimeString(); // 시간 추가
+        // 사용자명 > 메시지 내용 > 시간 형식으로 메시지 구성
+        socket.send(username + " : " + message + "    (" + date + ")");
+        document.getElementById("message").value = '';
+    }
+    </script>
+</body>
